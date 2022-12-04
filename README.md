@@ -8,4 +8,4 @@
 Input data that was landed in the S3 bucket can be found in the input_data folder.
 
 ### ETL Diagram:
-![ETL Diagram](/screenshots/SPARKIFY ETL.png)
+![ETL Diagram](/screenshots/SPARKIFY_ETL.png)
