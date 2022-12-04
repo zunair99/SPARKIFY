@@ -6,3 +6,6 @@
 ##### A consolidated version of the script containing all the code can be found in sparkify_etl.py
 
 Input data that was landed in the S3 bucket can be found in the input_data folder.
+
+ETL Diagram:
+![ETL](/screenshots/SPARKIFY ETL.png)
