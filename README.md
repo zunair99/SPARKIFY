@@ -9,3 +9,6 @@ Input data that was landed in the S3 bucket can be found in the input_data folde
 
 ### ETL Diagram:
 ![ETL Diagram](/screenshots/SPARKIFY_ETL.png)
+
+## Schema:
+![Sparkfiy Schema](/screenshots/SPARKIFY_SCHEMA.png)
