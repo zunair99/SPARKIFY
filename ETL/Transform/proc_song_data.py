@@ -20,4 +20,4 @@ def proc_song_data(spark, input, output):
                 col('song_id').isNotNull()
             )
     song_dt_path = output + 'songs'
-    songs_tb.write.mode('overwrite').partitionBy('year','artist_id').parquet(song_dt_path)
+    songs_tb.write.partitionBy('year','artist_id').parquet(song_dt_path)

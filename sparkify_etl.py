@@ -39,6 +39,7 @@ def song_schema():
 def extract_song_dt(spark, input):
     song_data = input + 'song-data/song_data/*/*/*/*.json'
     song_df = spark.read.json(song_data, song_schema())
+    print("Song Data Read by Spark Successfully")
     return song_df
 
 #Process Song Data Columns from Dataframe and write to Parquet file
@@ -59,8 +60,7 @@ def proc_song_data(spark, input, output):
             .where(
                 col('song_id').isNotNull()
             )
-    song_dt_path = output + 'songs'
-    songs_tb.write.mode('overwrite').partitionBy('year','artist_id').parquet(song_dt_path)
+    songs_tb.write.parquet(f'{output}songs',mode='overwrite',partitionBy=['year','artist_id'])
 
 #Process Artist Data Columns from Dataframe and write to Parquet file
 def proc_artist_data(spark, input, output):
@@ -80,8 +80,7 @@ def proc_artist_data(spark, input, output):
                 col('artist_id').isNotNull()
             )
 
-    artist_dt_path = output + 'artists'
-    artist_tb.write.mode('overwrite').parquet(artist_dt_path)
+    artist_tb.write.parquet(f'{output}artists',mode='overwrite',partitionBy=['artist_id'])
 
 def extract_log_dt(spark, input):
     log_data = input + 'log-data/*.json'
@@ -105,8 +104,8 @@ def proc_log_data(spark, input, output):
         .distinct()\
             .where(col('userId').isNotNull()
             )
-    users_path = output + 'users'
-    users_tb.write.mode('overwrite').parquet(users_path)
+
+    users_tb.write.parquet(f'{output}users',mode='overwrite',partitionBy=['userId'])
 
     def format_datetime(ts):
         return datetime.fromtimestamp(ts/100.0)
@@ -118,9 +117,9 @@ def proc_log_data(spark, input, output):
     df = df.withColumn("datetime", get_dt(df.ts))
 
     time_tb = df.select(
+        'datetime',
         'ts',
         'start_time',
-        'datetime',
         hour("datetime").alias('hour'),
         dayofmonth("datetime").alias('day'),
         weekofyear("datetime").alias('week'),
@@ -130,8 +129,7 @@ def proc_log_data(spark, input, output):
     )\
         .dropDuplicates()
     
-    time_tb_path = output + 'time'
-    time_tb.write.mode('overwrite').partitionBy('year','month').parquet(time_tb_path)
+    time_tb.write.parquet(f'{output}time',mode='overwrite',partitionBy=['year','month'])
 
     songs_df = extract_song_dt(spark, input)
 
@@ -141,6 +139,11 @@ def proc_log_data(spark, input, output):
         .where(df.page == 'NextSong')\
             .select(
                 [
+                    col('l.userId'),
+                    col('l.level'),
+                    col('s.song_id'),
+                    col('s.artist_id'),
+                    col('l.sessionID'),
                     col('l.start_time'),
                     year("l.datetime").alias('year'),
                     month("l.datetime").alias('month'),
@@ -148,14 +151,11 @@ def proc_log_data(spark, input, output):
                     col('l.level'),
                     col('s.song_id'),
                     col('s.artist_id'),
-                    col('l.sessionID'),
-                    col('l.location'),
-                    col('l.userAgent')
+                    col('l.sessionID')
                 ]
             )
     
-    songplays_path = output + 'songplays'
-    songplays_tb.write.mode('overwrite').partitionBy('year','month').parquet(songplays_path)
+    songplays_tb.write.parquet(f'{output}songplays',mode='overwrite',partitionBy=['year','month'])
 
 def main():
     findspark.init()

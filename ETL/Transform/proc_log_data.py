@@ -21,7 +21,7 @@ def proc_log_data(spark, input, output):
             .where(col('userId').isNotNull()
             )
     users_path = output + 'users'
-    users_tb.write.mode('overwrite').parquet(users_path)
+    users_tb.write.parquet(users_path)
 
     def format_datetime(ts):
         return datetime.fromtimestamp(ts/100.0)
@@ -46,7 +46,7 @@ def proc_log_data(spark, input, output):
         .dropDuplicates()
     
     time_tb_path = output + 'time'
-    time_tb.write.mode('overwrite').partitionBy('year','month').parquet(time_tb_path)
+    time_tb.write.partitionBy('year','month').parquet(time_tb_path)
 
     songs_df = extract_song_dt(spark, input)
 
@@ -70,4 +70,4 @@ def proc_log_data(spark, input, output):
             )
     
     songplays_path = output + 'songplays'
-    songplays_tb.write.mode('overwrite').partitionBy('year','month').parquet(songplays_path)
+    songplays_tb.write.partitionBy('year','month').parquet(songplays_path)

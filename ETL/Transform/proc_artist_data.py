@@ -20,4 +20,4 @@ def proc_artist_data(spark, input, output):
             )
 
     artist_dt_path = output + 'artists'
-    artist_tb.write.mode('overwrite').parquet(artist_dt_path)
+    artist_tb.write.parquet(artist_dt_path)
